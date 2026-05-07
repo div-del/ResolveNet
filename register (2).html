@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Register — ComplaintTrack</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#020408;
+  --card:#0c1220;
+  --border:#1a2540;
+  --border2:#253050;
+  --accent:#00c8ff;
+  --accent2:#7b6fff;
+  --accent3:#00ffb3;
+  --text:#e8f0fe;
+  --muted:#4a5a7a;
+  --muted2:#6a7a9a;
+  --danger:#ff4466;
+  --success:#00ffb3;
+  --warn:#ffaa00;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Space Grotesk',sans-serif;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow-x:hidden;position:relative;
+}
+.bg-canvas{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 10%, rgba(0,200,255,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 80%, rgba(123,111,255,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 90%, rgba(0,255,179,0.04) 0%, transparent 50%),
+    #020408;
+}
+.grid-lines{
+  position:fixed;inset:0;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,200,255,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,200,255,0.035) 1px,transparent 1px);
+  background-size:60px 60px;
+  animation:gScroll 20s linear infinite;
+}
+@keyframes gScroll{0%{background-position:0 0;}100%{background-position:60px 60px;}}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:oFloat var(--d,12s) ease-in-out infinite;}
+.o1{width:400px;height:400px;background:rgba(0,200,255,0.06);top:-10%;right:-5%;--d:14s;}
+.o2{width:300px;height:300px;background:rgba(123,111,255,0.07);bottom:-5%;left:-5%;--d:18s;animation-delay:-7s;}
+.o3{width:200px;height:200px;background:rgba(0,255,179,0.05);top:50%;left:40%;--d:10s;animation-delay:-3s;}
+@keyframes oFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-20px) scale(1.1);}66%{transform:translate(-20px,30px) scale(0.9);}}
+
+.page{position:relative;z-index:1;width:100%;max-width:520px;padding:24px 16px;}
+.brand{text-align:center;margin-bottom:28px;animation:fDown 0.7s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes fDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+.brand-logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:10px;}
+.logo-icon{
+  width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(0,200,255,0.2),rgba(123,111,255,0.2));
+  border:1px solid rgba(0,200,255,0.3);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  box-shadow:0 0 20px rgba(0,200,255,0.15),inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.brand-name{
+  font-family:'Orbitron',monospace;font-size:1.35rem;font-weight:700;
+  background:linear-gradient(135deg,#00c8ff 0%,#7b6fff 50%,#00ffb3 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:2px;
+}
+.brand-sub{font-size:0.77rem;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;}
+
+.card{
+  background:linear-gradient(145deg,rgba(12,18,32,0.97) 0%,rgba(8,13,20,0.99) 100%);
+  border:1px solid var(--border);border-radius:20px;padding:32px;
+  position:relative;overflow:hidden;
+  animation:rUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+  box-shadow:0 0 0 1px rgba(0,200,255,0.04),0 24px 60px rgba(0,0,0,0.6),0 0 80px rgba(0,200,255,0.03);
+}
+@keyframes rUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+.card::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,0.5),rgba(123,111,255,0.5),transparent);
+}
+.card::after{
+  content:'';position:absolute;top:0;right:0;width:140px;height:140px;
+  background:radial-gradient(circle at top right,rgba(0,200,255,0.06),transparent 70%);
+  border-radius:0 20px 0 0;pointer-events:none;
+}
+
+.step-track{display:flex;align-items:center;gap:0;margin-bottom:28px;}
+.sdot{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.68rem;font-weight:600;font-family:'Orbitron',monospace;
+  border:1.5px solid var(--border2);color:var(--muted);
+  transition:all 0.4s;flex-shrink:0;
+}
+.sdot.active{border-color:var(--accent);color:var(--accent);background:rgba(0,200,255,0.1);box-shadow:0 0 12px rgba(0,200,255,0.25);}
+.sdot.done{border-color:var(--accent3);color:var(--accent3);background:rgba(0,255,179,0.1);box-shadow:0 0 12px rgba(0,255,179,0.2);}
+.sline{flex:1;height:1.5px;background:var(--border);transition:background 0.4s;}
+.sline.done{background:linear-gradient(90deg,var(--accent3),var(--accent));}
+
+.card-head{margin-bottom:22px;}
+.card-title{font-family:'Orbitron',monospace;font-size:1rem;font-weight:600;color:#fff;letter-spacing:1.5px;margin-bottom:4px;}
+.card-sub{font-size:0.8rem;color:var(--muted2);}
+.card-sub span{color:var(--accent);}
+
+.form-row{display:flex;gap:14px;}
+.form-row .fg{flex:1;}
+.fg{margin-bottom:15px;animation:fSlide 0.4s ease both;}
+@keyframes fSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+label{display:block;font-size:0.7rem;font-weight:600;color:var(--muted2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;}
+.iw{position:relative;}
+.iw .ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
+.iw .ict{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px;}
+
+input,select{
+  width:100%;background:rgba(255,255,255,0.03);
+  border:1px solid var(--border2);border-radius:10px;
+  color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:0.88rem;
+  padding:11px 14px 11px 38px;outline:none;transition:all 0.25s;-webkit-appearance:none;
+}
+select{padding-left:38px;cursor:pointer;}
+input:focus,select:focus{
+  border-color:var(--accent);background:rgba(0,200,255,0.04);
+  box-shadow:0 0 0 3px rgba(0,200,255,0.1),0 0 20px rgba(0,200,255,0.05);
+}
+input.err{border-color:var(--danger);}
+input.ok{border-color:var(--accent3);}
+input::placeholder{color:var(--muted);opacity:0.6;}
+
+.hint{font-size:0.73rem;margin-top:5px;padding-left:2px;}
+.hint.e{color:var(--danger);}
+.hint.s{color:var(--accent3);}
+.hint.n{color:var(--muted2);}
+
+.str-bar{display:flex;gap:4px;margin-top:7px;}
+.sb{flex:1;height:2px;border-radius:2px;background:var(--border);transition:all 0.3s;}
+.sb.w{background:var(--danger);}
+.sb.m{background:var(--warn);}
+.sb.g{background:var(--accent);}
+.sb.s{background:var(--accent3);}
+
+.roles{display:flex;gap:10px;margin-bottom:15px;}
+.role{
+  flex:1;padding:10px 6px;background:rgba(255,255,255,0.02);
+  border:1px solid var(--border2);border-radius:10px;
+  color:var(--muted2);font-family:'Space Grotesk',sans-serif;
+  font-size:0.78rem;font-weight:500;cursor:pointer;text-align:center;transition:all 0.25s;
+}
+.role .ri{display:block;font-size:1.1rem;margin-bottom:3px;}
+.role:hover{border-color:var(--accent);color:var(--accent);}
+.role.sel{border-color:var(--accent);background:rgba(0,200,255,0.08);color:var(--accent);box-shadow:0 0 16px rgba(0,200,255,0.1);}
+
+.btn-p{
+  width:100%;
+  background:linear-gradient(135deg,#0090cc 0%,#7b6fff 50%,#00b890 100%);
+  background-size:200% auto;
+  border:none;border-radius:10px;color:#fff;
+  font-family:'Orbitron',monospace;font-size:0.8rem;font-weight:600;letter-spacing:2px;
+  padding:13px;cursor:pointer;margin-top:6px;
+  transition:background-position 0.4s,transform 0.15s,box-shadow 0.3s;
+  box-shadow:0 4px 24px rgba(0,144,204,0.25);
+  position:relative;overflow:hidden;
+}
+.btn-p::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent 50%);
+  border-radius:10px;
+}
+.btn-p:hover{background-position:right center;transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,144,204,0.35),0 0 40px rgba(0,200,255,0.1);}
+.btn-p:active{transform:translateY(0);}
+
+.btn-s{
+  width:100%;background:transparent;border:1px solid var(--border2);border-radius:10px;
+  color:var(--muted2);font-family:'Space Grotesk',sans-serif;font-size:0.86rem;
+  padding:11px;cursor:pointer;margin-top:10px;transition:all 0.2s;
+}
+.btn-s:hover{border-color:var(--accent2);color:var(--accent2);}
+
+.ck-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:15px;}
+.ck-row input[type=checkbox]{width:15px;height:15px;margin-top:2px;padding:0;flex-shrink:0;accent-color:var(--accent);}
+.ck-row label{font-size:0.78rem;color:var(--muted2);text-transform:none;letter-spacing:0;}
+.ck-row label a{color:var(--accent);text-decoration:none;}
+.ck-row label a:hover{text-decoration:underline;}
+
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.divider span{font-size:0.72rem;color:var(--muted);letter-spacing:1.5px;white-space:nowrap;}
+
+.foot{text-align:center;margin-top:18px;font-size:0.83rem;color:var(--muted);}
+.foot a{color:var(--accent);text-decoration:none;font-weight:500;}
+.foot a:hover{color:var(--accent2);}
+
+.succ{text-align:center;padding:16px 0;display:none;}
+.succ-ring{
+  width:80px;height:80px;border-radius:50%;
+  border:1.5px solid var(--accent3);background:rgba(0,255,179,0.08);
+  display:inline-flex;align-items:center;justify-content:center;font-size:32px;
+  margin-bottom:20px;animation:pop 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  box-shadow:0 0 30px rgba(0,255,179,0.2);
+}
+@keyframes pop{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+.succ h2{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:600;color:#fff;letter-spacing:2px;margin-bottom:8px;}
+.succ p{color:var(--muted2);font-size:0.84rem;line-height:1.7;}
+
+/* select arrow */
+.iw.sel-wrap::after{content:'⌄';position:absolute;right:12px;top:50%;transform:translateY(-55%);color:var(--muted);font-size:12px;pointer-events:none;}
+</style>
+</head>
+<body>
+<div class="bg-canvas"></div>
+<div class="grid-lines"></div>
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+<div class="orb o3"></div>
+
+<div class="page">
+  <div class="brand">
+    <div class="brand-logo">
+      <div class="logo-icon">🎯</div>
+      <span class="brand-name">COMPLAINTTRACK</span>
+    </div>
+    <p class="brand-sub">Advanced Issue Management System</p>
+  </div>
+
+  <div class="card">
+    <div class="step-track" id="stepTrack">
+      <div class="sdot active" id="sd1">01</div>
+      <div class="sline" id="sl1"></div>
+      <div class="sdot" id="sd2">02</div>
+      <div class="sline" id="sl2"></div>
+      <div class="sdot" id="sd3">03</div>
+    </div>
+
+    <div id="formMain">
+      <div class="card-head">
+        <div class="card-title" id="ctitle">IDENTITY SETUP</div>
+        <div class="card-sub">Step <span id="sLbl">1</span> of 3 &mdash; <span id="sDesc" style="color:var(--muted2)">Personal information</span></div>
+      </div>
+
+      <!-- Step 1 -->
+      <div id="s1">
+        <div class="form-row">
+          <div class="fg">
+            <label>First Name</label>
+            <div class="iw">
+              <span class="ico">◈</span>
+              <input type="text" id="fname" placeholder="Arjun" oninput="live('fname')"/>
+            </div>
+            <div class="hint e" id="fnE"></div>
+          </div>
+          <div class="fg">
+            <label>Last Name</label>
+            <div class="iw">
+              <span class="ico">◈</span>
+              <input type="text" id="lname" placeholder="Kumar"/>
+            </div>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Email Address</label>
+          <div class="iw">
+            <span class="ico" style="font-family:monospace;font-size:12px">@</span>
+            <input type="email" id="email" placeholder="arjun@college.edu" oninput="live('email')"/>
+          </div>
+          <div class="hint e" id="emE"></div>
+        </div>
+        <div class="fg">
+          <label>Phone Number</label>
+          <div class="iw">
+            <span class="ico">✦</span>
+            <input type="tel" id="phone" placeholder="+91 98765 43210" maxlength="14"/>
+          </div>
+          <div class="hint e" id="phE"></div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="s2" style="display:none">
+        <div class="fg">
+          <label>Username</label>
+          <div class="iw">
+            <span class="ico" style="font-family:monospace">#</span>
+            <input type="text" id="uname" placeholder="arjun_k" oninput="live('uname')"/>
+          </div>
+          <div class="hint e" id="unE"></div>
+        </div>
+        <div class="fg">
+          <label>Department</label>
+          <div class="iw sel-wrap">
+            <span class="ico">⬡</span>
+            <select id="dept">
+              <option value="">Select department</option>
+              <option>Computer Science</option>
+              <option>Information Technology</option>
+              <option>Electronics</option>
+              <option>Mechanical</option>
+              <option>Civil</option>
+              <option>Administration</option>
+              <option>Management</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Register As</label>
+          <div class="roles">
+            <button class="role sel" onclick="setRole(this,'user')" type="button"><span class="ri">◎</span>User</button>
+            <button class="role" onclick="setRole(this,'staff')" type="button"><span class="ri">⚙</span>Staff</button>
+            <button class="role" onclick="setRole(this,'admin')" type="button"><span class="ri">◆</span>Admin</button>
+          </div>
+          <input type="hidden" id="role" value="user"/>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div id="s3" style="display:none">
+        <div class="fg">
+          <label>Create Password</label>
+          <div class="iw">
+            <span class="ico">⬤</span>
+            <input type="password" id="pwd" placeholder="Min. 8 characters" oninput="checkStr()" style="padding-right:38px"/>
+            <button class="ict" onclick="togPwd('pwd',this)" type="button">◉</button>
+          </div>
+          <div class="str-bar"><div class="sb" id="b1"></div><div class="sb" id="b2"></div><div class="sb" id="b3"></div><div class="sb" id="b4"></div></div>
+          <div class="hint n" id="strH">Enter a password</div>
+        </div>
+        <div class="fg">
+          <label>Confirm Password</label>
+          <div class="iw">
+            <span class="ico">⬤</span>
+            <input type="password" id="cpwd" placeholder="Re-enter password" oninput="matchPwd()" style="padding-right:38px"/>
+            <button class="ict" onclick="togPwd('cpwd',this)" type="button">◉</button>
+          </div>
+          <div class="hint e" id="cpE"></div>
+        </div>
+        <div class="ck-row">
+          <input type="checkbox" id="agree"/>
+          <label for="agree">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+      </div>
+
+      <button class="btn-p" id="mainBtn" onclick="next()">CONTINUE</button>
+      <button class="btn-s" id="backBtn" onclick="back()" style="display:none">← BACK</button>
+    </div>
+
+    <!-- Success -->
+    <div class="succ" id="succScreen">
+      <div class="succ-ring">✓</div>
+      <h2>ACCESS GRANTED</h2>
+      <p>Your account has been created successfully.<br/>System is ready. Proceed to login.</p>
+      <button class="btn-p" style="margin-top:24px" onclick="window.location.href='login.html'">LAUNCH LOGIN →</button>
+    </div>
+
+    <div class="divider" id="divLine"><span>SECURE REGISTRATION</span></div>
+    <div class="foot" id="footLink">Already registered? <a href="login.html">Login to system →</a></div>
+  </div>
+</div>
+
+<script>
+let cur=1;
+const titles=['IDENTITY SETUP','ACCOUNT CONFIG','SECURITY LAYER'];
+const descs=['Personal information','Account preferences','Password & access'];
+
+function updUI(){
+  document.getElementById('sLbl').textContent=cur;
+  document.getElementById('ctitle').textContent=titles[cur-1];
+  document.getElementById('sDesc').textContent=descs[cur-1];
+  document.getElementById('backBtn').style.display=cur>1?'block':'none';
+  document.getElementById('mainBtn').textContent=cur===3?'CREATE ACCOUNT ✓':'CONTINUE';
+  for(let i=1;i<=3;i++){
+    const d=document.getElementById('sd'+i);
+    d.className='sdot'+(i<cur?' done':i===cur?' active':'');
+    if(i<3)document.getElementById('sl'+i).className='sline'+(i<cur?' done':'');
+  }
+}
+
+function next(){
+  if(!validate())return;
+  if(cur===3){submit();return;}
+  document.getElementById('s'+cur).style.display='none';
+  cur++;
+  document.getElementById('s'+cur).style.display='block';
+  updUI();
+}
+function back(){
+  document.getElementById('s'+cur).style.display='none';
+  cur--;
+  document.getElementById('s'+cur).style.display='block';
+  updUI();
+}
+
+function validate(){
+  let ok=true;
+  if(cur===1){
+    const fn=document.getElementById('fname').value.trim();
+    const em=document.getElementById('email').value.trim();
+    if(!fn){sh('fnE','First name is required','e');ok=false;}else cl('fnE');
+    if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){sh('emE','Enter a valid email address','e');ok=false;}else cl('emE');
+  }
+  if(cur===2){
+    const un=document.getElementById('uname').value.trim();
+    if(!un||un.length<3){sh('unE','Username must be at least 3 characters','e');ok=false;}else cl('unE');
+  }
+  if(cur===3){
+    const p=document.getElementById('pwd').value;
+    const c=document.getElementById('cpwd').value;
+    if(p.length<8){sh('strH','Password must be at least 8 characters','e');ok=false;}
+    if(p&&c&&p!==c){sh('cpE','Passwords do not match','e');ok=false;}else cl('cpE');
+    if(!document.getElementById('agree').checked){alert('Please accept the Terms of Service.');ok=false;}
+  }
+  return ok;
+}
+
+function submit(){
+  document.getElementById('formMain').style.display='none';
+  document.getElementById('divLine').style.display='none';
+  document.getElementById('footLink').style.display='none';
+  document.getElementById('stepTrack').style.display='none';
+  document.getElementById('succScreen').style.display='block';
+}
+
+function setRole(btn,val){
+  document.querySelectorAll('.role').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('role').value=val;
+}
+function togPwd(id,btn){
+  const el=document.getElementById(id);
+  el.type=el.type==='password'?'text':'password';
+  btn.textContent=el.type==='password'?'◉':'◎';
+}
+function checkStr(){
+  const p=document.getElementById('pwd').value;
+  const bs=[document.getElementById('b1'),document.getElementById('b2'),document.getElementById('b3'),document.getElementById('b4')];
+  bs.forEach(b=>b.className='sb');
+  let sc=0;
+  if(p.length>=8)sc++;if(/[A-Z]/.test(p))sc++;if(/[0-9]/.test(p))sc++;if(/[^A-Za-z0-9]/.test(p))sc++;
+  const cls=sc<=1?'w':sc===2?'m':sc===3?'g':'s';
+  const lbs=['','Weak — add uppercase & numbers','Fair — add numbers or symbols','Good — almost perfect','Strong — excellent!'];
+  for(let i=0;i<sc;i++)bs[i].className='sb '+cls;
+  const h=document.getElementById('strH');
+  h.textContent=p?lbs[sc]:'Enter a password';
+  h.className='hint '+(sc<=1?'e':sc===2?'n':'s');
+}
+function matchPwd(){
+  const p=document.getElementById('pwd').value,c=document.getElementById('cpwd').value;
+  if(c&&p!==c)sh('cpE','Passwords do not match','e');
+  else if(c&&p===c)sh('cpE','Passwords match ✓','s');
+  else cl('cpE');
+}
+function live(f){
+  if(f==='email'){const v=document.getElementById('email').value.trim();if(v)/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)?cl('emE'):sh('emE','Invalid email format','e');}
+  if(f==='fname'&&document.getElementById('fname').value.trim())cl('fnE');
+  if(f==='uname'&&document.getElementById('uname').value.trim().length>=3)cl('unE');
+}
+function sh(id,msg,cls){const e=document.getElementById(id);if(e){e.textContent=msg;e.className='hint '+cls;}}
+function cl(id){const e=document.getElementById(id);if(e)e.textContent='';}
+</script>
+</body>
+</html>
